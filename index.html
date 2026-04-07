@@ -98,7 +98,6 @@
             color: white !important;
         }
 
-        /* ফাঁকা থাকলে কন্টেইনার হাইড থাকবে */
         #gallery:empty { display: none; }
     </style>
 </head>
@@ -108,7 +107,7 @@
     <h2>BY JRN</h2>
 
     <div class="container" id="gallery">
-        <!-- কার্ডগুলো এখানে লোড হবে -->
+        <!-- কার্ড লোড হবে -->
     </div>
 
     <script>
@@ -122,21 +121,21 @@
                 const json = JSON.parse(data.substr(47).slice(0, -2));
                 const rows = json.table.rows;
                 
-                // নতুন আপলোড করা ডেটা উপরে দেখানোর জন্য রিভার্স করা হয়েছে
                 const reversedRows = [...rows].reverse();
                 
                 let html = '';
                 reversedRows.forEach((row) => {
-                    // ভ্যালিডেশন: যদি ইমেজ লিঙ্ক না থাকে অথবা এটি হেডার রো হয় তবে বাদ যাবে
                     if (!row.c || !row.c[2] || !row.c[2].v || row.c[2].v === "" || row.c[2].v === "ImageURL") {
-                        return; 
+                        return;
                     }
 
                     const title = row.c[0] ? row.c[0].v : 'Untitled';
-                    const prompt = row.c[1] ? row.c[1].v : '';
+                    // প্রম্পট ক্লিন করার জন্য trim() এবং এস্কেপিং ব্যবহার করা হয়েছে
+                    const promptRaw = row.c[1] ? row.c[1].v : '';
+                    const promptEncoded = btoa(unescape(encodeURIComponent(promptRaw))); // Base64 এনকোডিং যাতে এরর না হয়
+
                     let img = row.c[2].v;
 
-                    // গুগল ড্রাইভ লিঙ্ক কনভার্টার
                     if (img.includes("drive.google.com")) {
                         let fileId = "";
                         if (img.includes("/d/")) {
@@ -152,7 +151,7 @@
                             <img src="${img}" alt="${title}" onerror="this.style.display='none'">
                             <div class="info-box">
                                 <div class="title-text">${title}</div>
-                                <button class="copy-btn" onclick="copyPrompt(this, \`${prompt.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)">Copy Prompt</button>
+                                <button class="copy-btn" onclick="copyFromBase64(this, '${promptEncoded}')">Copy Prompt</button>
                             </div>
                         </div>`;
                 });
@@ -163,12 +162,12 @@
             }
         }
 
-        // কপি করার ইউনিভার্সাল মেথড
-        function copyPrompt(button, text) {
-            if (!text) return;
-
+        // নতুন কপি মেথড যা সব ক্যারেক্টার সাপোর্ট করবে
+        function copyFromBase64(button, encodedText) {
+            const decodedText = decodeURIComponent(escape(atob(encodedText)));
+            
             const textArea = document.createElement("textarea");
-            textArea.value = text;
+            textArea.value = decodedText;
             textArea.style.position = "fixed";
             textArea.style.left = "-9999px";
             textArea.style.top = "0";
