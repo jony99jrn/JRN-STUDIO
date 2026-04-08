@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Studio</title>
-    <!-- Google Fonts -->
+    <title>Prompt Studio | JRN STUDIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -28,7 +27,6 @@
             align-items: center;
         }
 
-        /* মেইন হেডার স্টাইল */
         h1 {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 52px; 
@@ -38,7 +36,6 @@
             color: var(--accent);
             font-weight: 400;
             line-height: 1;
-            text-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
         }
 
         h2 {
@@ -46,10 +43,34 @@
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 8px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             color: var(--secondary-text);
             font-weight: 600;
-            opacity: 0.8;
+        }
+
+        /* --- Video Section --- */
+        .video-section {
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 30px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 177.77%; /* Shorts/Vertical Video Ratio (9:16) */
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .container {
@@ -60,7 +81,6 @@
             max-width: 450px;
         }
 
-        /* ইমেজ কার্ড ডিজাইন আপডেট */
         .card {
             background: var(--card-bg);
             border-radius: 20px;
@@ -78,7 +98,6 @@
             width: 100%;
             height: auto;
             display: block;
-            background-color: #000;
         }
 
         .info-box {
@@ -86,10 +105,8 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            background: linear-gradient(180deg, rgba(30, 41, 59, 0) 0%, rgba(15, 23, 42, 0.5) 100%);
         }
 
-        /* ইমেজ টাইটেল আপডেট */
         .title-text {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.8rem;
@@ -99,7 +116,6 @@
             text-transform: uppercase;
         }
 
-        /* কপি বাটন আপডেট */
         .copy-btn {
             background: transparent;
             color: var(--accent);
@@ -112,18 +128,11 @@
             border-radius: 12px;
             width: 100%;
             transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: 1px;
         }
 
         .copy-btn:hover {
             background: var(--accent);
             color: var(--bg);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-        }
-
-        .copy-btn:active {
-            transform: scale(0.95);
         }
 
         .copied {
@@ -132,7 +141,7 @@
             color: white !important;
         }
 
-        #gallery:empty { display: none; }
+        #loader { color: var(--secondary-text); margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -140,9 +149,21 @@
     <h1>PROMPT STUDIO</h1>
     <h2>BY JRN</h2>
 
-    <div class="container" id="gallery">
-        <!-- কন্টেন্ট লোড হবে -->
+    <div class="video-section">
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/hLLlq4UzHPg?rel=0&modestbranding=1" 
+                title="Tutorial Video" 
+                frameborder="0" 
+                allowfullscreen>
+            </iframe>
+        </div>
     </div>
+
+    <div id="loader">Loading Arts...</div>
+
+    <div class="container" id="gallery">
+        </div>
 
     <script>
         const sheetID = '15wUCjsVJRv7R8wT4xrd9e3xV5UWhub04suXCfK8lFik';
@@ -156,32 +177,27 @@
                 const rows = json.table.rows;
                 
                 const reversedRows = [...rows].reverse();
+                document.getElementById('loader').style.display = 'none';
                 
                 let html = '';
                 reversedRows.forEach((row) => {
-                    if (!row.c || !row.c[2] || !row.c[2].v || row.c[2].v === "" || row.c[2].v === "ImageURL") {
-                        return;
-                    }
+                    if (!row.c || !row.c[2] || !row.c[2].v || row.c[2].v === "" || row.c[2].v === "ImageURL") return;
 
                     const title = row.c[0] ? row.c[0].v : 'UNNAMED ART';
                     const promptRaw = row.c[1] ? row.c[1].v : '';
                     const promptEncoded = btoa(unescape(encodeURIComponent(promptRaw)));
 
                     let img = row.c[2].v;
-
                     if (img.includes("drive.google.com")) {
                         let fileId = "";
-                        if (img.includes("/d/")) {
-                            fileId = img.split('/d/')[1].split('/')[0];
-                        } else if (img.includes("id=")) {
-                            fileId = img.split('id=')[1].split('&')[0];
-                        }
+                        if (img.includes("/d/")) fileId = img.split('/d/')[1].split('/')[0];
+                        else if (img.includes("id=")) fileId = img.split('id=')[1].split('&')[0];
                         img = `https://lh3.googleusercontent.com/d/${fileId}`;
                     }
 
                     html += `
                         <div class="card">
-                            <img src="${img}" alt="${title}" onerror="this.style.display='none'">
+                            <img src="${img}" alt="${title}" onerror="this.parentElement.style.display='none'">
                             <div class="info-box">
                                 <div class="title-text">${title}</div>
                                 <button class="copy-btn" onclick="copyFromBase64(this, '${promptEncoded}')">Get Prompt</button>
@@ -192,6 +208,7 @@
                 document.getElementById('gallery').innerHTML = html;
             } catch (e) {
                 console.error("Error:", e);
+                document.getElementById('loader').innerText = "Failed to load data.";
             }
         }
 
@@ -199,13 +216,8 @@
             const decodedText = decodeURIComponent(escape(atob(encodedText)));
             const textArea = document.createElement("textarea");
             textArea.value = decodedText;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            textArea.style.top = "0";
             document.body.appendChild(textArea);
-            textArea.focus();
             textArea.select();
-            textArea.setSelectionRange(0, 99999);
             try {
                 document.execCommand('copy');
                 const originalText = button.innerText;
