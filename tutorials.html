@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorials Hub | JRN STUDIO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    
+    <title>Tutorials | JRN STUDIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0f172a;
@@ -13,158 +12,98 @@
             --accent: #38bdf8;
             --text: #f8fafc;
             --border: #334155;
-            --secondary-text: #94a3b8;
+            --sec-text: #94a3b8;
         }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Poppins', sans-serif;
-            margin: 0; padding: 20px;
-        }
-
-        .header-section { text-align: center; margin-bottom: 50px; }
-        h1 { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 6px; margin: 0; color: var(--accent); }
-        h2 { font-size: 12px; letter-spacing: 8px; color: var(--secondary-text); margin-top: 5px; }
-
-        .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        h1 { font-family: 'Bebas Neue', sans-serif; font-size: 50px; color: var(--accent); letter-spacing: 5px; margin: 0; }
         
-        .section-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 32px;
-            color: var(--text);
-            border-left: 5px solid var(--accent);
-            padding-left: 15px;
-            margin: 40px 0 20px;
-            letter-spacing: 2px;
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            width: 100%;
-        }
-
-        .video-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            transition: 0.3s;
-        }
-
-        .video-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            background: #000;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%; border: none;
-        }
-
-        .info-box { padding: 15px; }
-        .video-title { font-size: 14px; font-weight: 600; margin: 0; color: var(--text); }
-
-        #loader { text-align: center; margin-top: 100px; color: var(--secondary-text); letter-spacing: 3px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .group-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; border-left: 4px solid var(--accent); padding-left: 15px; margin: 40px 0 20px; letter-spacing: 2px; }
+        
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; overflow: hidden; transition: 0.3s; }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        
+        .video-box { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .info { padding: 15px; }
+        .v-title { font-size: 14px; font-weight: 600; margin: 0; color: var(--text); }
+        #loader { text-align: center; margin-top: 50px; color: var(--sec-text); letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="header-section">
+    <div class="header">
         <h1>TUTORIALS HUB</h1>
-        <h2>BY JRN STUDIO</h2>
     </div>
 
-    <div id="loader">LOADING YOUR VIDEOS...</div>
+    <div id="loader">FETCHING DATA...</div>
     <div class="container" id="mainContent"></div>
 
     <script>
-    const sheetID = '15wUCjsVJRv7R8wT4xrd9e3xV5UWhub04suXCfK8lFik';
-    const gid = '1164964640'; 
-    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&gid=${gid}`;
+        const sheetID = '15wUCjsVJRv7R8wT4xrd9e3xV5UWhub04suXCfK8lFik';
+        const gid = '1164964640'; // TUTORIALS ট্যাবের GID
+        const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
-    // --- UPDATED SMART LINK CONVERTER ---
-    function convertToEmbedLink(rawUrl) {
-        if (!rawUrl) return '';
-        
-        // YouTube Logic
-        const ytReg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const ytMatch = rawUrl.match(ytReg);
-        if (ytMatch && ytMatch[2].length === 11) {
-            return `https://www.youtube.com/embed/${ytMatch[2]}`;
-        }
-
-        // Google Drive Logic (Fixed to handle ?usp=drivesdk)
-        if (rawUrl.includes('drive.google.com')) {
-            // এটি লিঙ্কের ভেতর থেকে /d/ এর পরের ৩৩-৪০ অক্ষরের আইডিটি খুঁজে বের করবে
-            const dIdMatch = rawUrl.match(/\/d\/(.+?)\/(view|edit|\?|$)/);
-            if (dIdMatch && dIdMatch[1]) {
-                return `https://drive.google.com/file/d/${dIdMatch[1].split(/[?&]/)[0]}/preview`;
-            }
-        }
-        return rawUrl;
-    }
-
-    async function loadData() {
-        try {
-            const response = await fetch(url + '&cache=' + Date.now());
-            const text = await response.text();
-            const json = JSON.parse(text.substr(47).slice(0, -2));
-            const rows = json.table.rows;
+        // ইউটিউব এবং গুগল ড্রাইভ কনভার্টার
+        function getEmbedUrl(raw) {
+            if (!raw) return '';
             
-            const mainContent = document.getElementById('mainContent');
-            const projects = {};
+            // YouTube Handler
+            const ytMatch = raw.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+            if (ytMatch && ytMatch[2].length === 11) return `https://www.youtube.com/embed/${ytMatch[2]}`;
 
-            rows.forEach((row, index) => {
-                // ১ম রো (Heading) বাদ দিয়ে ডাটা চেক করা
-                if (index === 0) return;
+            // Google Drive Handler (Fixes 404/Bad Request)
+            if (raw.includes('drive.google.com')) {
+                const driveId = raw.match(/\/d\/(.+?)\//);
+                if (driveId && driveId[1]) return `https://drive.google.com/file/d/${driveId[1]}/preview`;
+            }
+            return raw;
+        }
+
+        async function init() {
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                const json = JSON.parse(text.substr(47).slice(0, -2));
+                const rows = json.table.rows;
                 
-                // শিটের কলাম অনুযায়ী: 0=নাম, 1=লিঙ্ক, 2=প্রজেক্ট
-                const vTitle = row.c[0] ? row.c[0].v : 'Untitled Video';
-                const rawLink = row.c[1] ? row.c[1].v : '';
-                const vGroup = row.c[2] ? row.c[2].v.toUpperCase() : 'OTHERS';
+                const container = document.getElementById('mainContent');
+                const groups = {};
 
-                if (rawLink) {
-                    if (!projects[vGroup]) projects[vGroup] = [];
-                    projects[vGroup].push({ 
-                        title: vTitle, 
-                        embed: convertToEmbedLink(rawLink) 
-                    });
+                rows.forEach((row, i) => {
+                    if (i === 0 || !row.c[1]) return; // ১ম রো বাদ
+                    
+                    const title = row.c[0]?.v || 'No Title';
+                    const link = getEmbedUrl(row.c[1]?.v);
+                    const project = row.c[2]?.v || 'OTHERS';
+
+                    if (!groups[project]) groups[project] = [];
+                    groups[project].push({ title, link });
+                });
+
+                document.getElementById('loader').style.display = 'none';
+                
+                let html = '';
+                for (const key in groups) {
+                    html += `<div class="group-title">${key}</div><div class="video-grid">`;
+                    html += groups[key].map(v => `
+                        <div class="card">
+                            <div class="video-box"><iframe src="${v.link}" allowfullscreen></iframe></div>
+                            <div class="info"><p class="v-title">${v.title}</p></div>
+                        </div>
+                    `).join('');
+                    html += `</div>`;
                 }
-            });
-
-            document.getElementById('loader').style.display = 'none';
-            
-            let finalHtml = '';
-            for (const key in projects) {
-                finalHtml += `<div class="section-title">${key}</div><div class="video-grid">`;
-                finalHtml += projects[key].map(item => `
-                    <div class="video-card">
-                        <div class="video-wrapper">
-                            <iframe src="${item.embed}" allowfullscreen allow="autoplay"></iframe>
-                        </div>
-                        <div class="info-box">
-                            <p class="video-title">${item.title}</p>
-                        </div>
-                    </div>
-                `).join('');
-                finalHtml += `</div>`;
+                container.innerHTML = html;
+            } catch (err) {
+                document.getElementById('loader').innerHTML = "FAILED TO LOAD DATA";
             }
-            mainContent.innerHTML = finalHtml;
-
-        } catch (err) {
-            document.getElementById('loader').innerText = "ERROR LOADING CONTENT.";
-            console.error(err);
         }
-    }
-
-    window.onload = loadData;
+        init();
     </script>
 </body>
 </html>
