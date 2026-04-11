@@ -58,9 +58,11 @@ async function askGemini(message) {
         });
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
-    } catch (error) {
-        return "দুঃখিত, বর্তমানে এআই রেসপন্স করতে পারছে না।";
-    }
+ // chatbot.js এর এই অংশটুকু পরিবর্তন করুন
+} catch (error) {
+    console.error("Gemini Error:", error); // এটি কনসোলে আসল এরর দেখাবে
+    return "দুঃখিত, এআই রেসপন্স করতে পারছে না। এরর: " + error.message;
+}
 }
 
 // ৫. মেসেজ হ্যান্ডলিং
