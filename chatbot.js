@@ -1,0 +1,83 @@
+// --- JRN AI CHATBOT (SINGLE-FILE SOLUTION) ---
+
+const API_KEY = "AIzaSyAOl4tZO1DTM2LUBOFrbr-wjls6Mf84vXg"; 
+
+// ১. HTML UI তৈরি করা
+const chatbotHTML = `
+<div id="chat-bubble" style="position: fixed; bottom: 25px; right: 25px; background: #38bdf8; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 10000; transition: 0.3s;">
+    <i class="fas fa-robot" style="color: #0f172a; font-size: 28px;"></i>
+</div>
+
+<div id="chat-window" style="display: none; position: fixed; bottom: 100px; right: 25px; width: 350px; height: 500px; background: #1e293b; border: 1px solid #334155; border-radius: 20px; flex-direction: column; overflow: hidden; z-index: 10000; box-shadow: 0 15px 50px rgba(0,0,0,0.6); font-family: 'Poppins', sans-serif;">
+    <div style="background: #38bdf8; padding: 15px; color: #0f172a; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fas fa-bolt"></i> JRN ASSISTANT</span>
+        <i class="fas fa-times" id="close-chat" style="cursor: pointer; font-size: 20px;"></i>
+    </div>
+    <div id="chat-logs" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #0f172a; scroll-behavior: smooth;">
+        <div style="background: #1e293b; color: #f8fafc; padding: 12px 16px; border-radius: 15px 15px 15px 0; align-self: flex-start; max-width: 85%; font-size: 14px; border: 1px solid #334155;">
+            হ্যালো! আমি JRN STUDIO-র এআই অ্যাসিস্ট্যান্ট। কীভাবে সাহায্য করতে পারি? 😊
+        </div>
+    </div>
+    <div style="padding: 15px; background: #1e293b; border-top: 1px solid #334155; display: flex; gap: 10px;">
+        <input type="text" id="user-input" placeholder="আপনার বার্তা লিখুন..." style="flex: 1; background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 12px; outline: none; font-size: 14px;">
+        <button id="send-btn" style="background: #38bdf8; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; color: #0f172a; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+`;
+
+// ২. বডিতে UI ইনজেক্ট করা
+document.body.insertAdjacentHTML('beforeend', chatbotHTML);
+
+// ৩. চ্যাট লজিক
+const bubble = document.getElementById('chat-bubble');
+const chatWin = document.getElementById('chat-window');
+const closeChat = document.getElementById('close-chat');
+const sendBtn = document.getElementById('send-btn');
+const userInput = document.getElementById('user-input');
+const chatLogs = document.getElementById('chat-logs');
+
+bubble.onclick = () => chatWin.style.display = chatWin.style.display === 'none' ? 'flex' : 'none';
+closeChat.onclick = () => chatWin.style.display = 'none';
+
+async function askGemini(message) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    const systemPrompt = "You are JRN Assistant for 'JRN STUDIO' by Jony Roy. JRN Studio offers Web Design, Development, and AI Prompt services. Keep answers short, friendly, and use Bengali.";
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: `${systemPrompt}\nUser: ${message}` }] }]
+        })
+    });
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+}
+
+async function handleChat() {
+    const text = userInput.value.trim();
+    if (!text) return;
+
+    chatLogs.innerHTML += `<div style="background: #38bdf8; color: #0f172a; padding: 12px 16px; border-radius: 15px 15px 0 15px; align-self: flex-end; max-width: 85%; font-size: 14px; font-weight: 600;">${text}</div>`;
+    userInput.value = "";
+    chatLogs.scrollTop = chatLogs.scrollHeight;
+
+    const loading = document.createElement('div');
+    loading.innerHTML = `<span style="color: #94a3b8; font-size: 12px; margin-left: 10px;">JRN AI ভাবছে...</span>`;
+    chatLogs.appendChild(loading);
+
+    try {
+        const reply = await askGemini(text);
+        chatLogs.removeChild(loading);
+        chatLogs.innerHTML += `<div style="background: #1e293b; color: #f8fafc; padding: 12px 16px; border-radius: 15px 15px 15px 0; align-self: flex-start; max-width: 85%; font-size: 14px; border: 1px solid #334155;">${reply}</div>`;
+    } catch (e) {
+        chatLogs.removeChild(loading);
+        chatLogs.innerHTML += `<div style="color: #ef4444; font-size: 12px;">Error connecting.</div>`;
+    }
+    chatLogs.scrollTop = chatLogs.scrollHeight;
+}
+
+sendBtn.onclick = handleChat;
+userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleChat(); });
