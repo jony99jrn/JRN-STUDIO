@@ -4,176 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JRN STUDIO | Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-            --secondary: #94a3b8;
-            --border: #334155;
+            --bg: #000000;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #4285f4; /* Google Blue */
+            --text-main: #ffffff;
+            --text-dim: #9aa0a6;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1a1a1a, #000 70%);
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
+        /* --- Labs Style Header --- */
         header {
-            height: 70vh;
+            height: 80vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 20px;
-            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
         }
 
         header h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(50px, 10vw, 90px);
-            letter-spacing: 8px;
-            color: var(--accent);
-            margin-bottom: 5px;
-            line-height: 1;
+            font-size: clamp(50px, 12vw, 110px);
+            font-weight: 800;
+            letter-spacing: -4px;
+            line-height: 0.9;
+            background: linear-gradient(to bottom, #fff, #555);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            animation: fadeInUp 1s ease-out forwards;
         }
 
         header p {
-            font-size: 14px;
-            color: var(--secondary);
-            letter-spacing: 4px;
+            font-size: 16px;
+            color: var(--accent);
+            letter-spacing: 6px;
             text-transform: uppercase;
-            margin-bottom: 35px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.2s forwards;
         }
 
         .socials {
             display: flex;
-            gap: 25px;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.4s forwards;
         }
 
         .socials a {
-            color: var(--text);
-            font-size: 30px;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 55px;
+            width: 55px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            font-size: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-decoration: none;
+            backdrop-filter: blur(10px);
         }
 
         .socials a:hover {
-            color: var(--accent);
-            transform: translateY(-8px) scale(1.1);
+            background: var(--accent);
+            color: #fff;
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px rgba(66, 133, 244, 0.3);
         }
 
+        /* --- Bento Grid Layout --- */
         .container {
-            max-width: 1000px;
-            margin: -40px auto 100px;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto 100px;
+            padding: 0 20px;
         }
 
         .section-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 40px;
-            letter-spacing: 3px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-dim);
             margin-bottom: 40px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            left: 0;
-            width: 40%;
-            height: 3px;
-            background: var(--accent);
+            text-align: center;
+            display: block;
         }
 
         .project-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
         }
 
         .project-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 35px;
-            transition: all 0.4s ease;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 40px;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            backdrop-filter: blur(20px);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            position: relative;
-            overflow: hidden;
+            min-height: 380px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
         }
 
+        /* Bento variation */
+        .card-large { grid-column: span 2; }
+
         .project-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
         }
 
         .project-card i {
-            font-size: 45px;
+            font-size: 32px;
             color: var(--accent);
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            background: rgba(66, 133, 244, 0.1);
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
         }
 
         .project-card h3 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 30px;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            color: var(--text);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            color: var(--text-main);
         }
 
         .project-card p {
-            color: var(--secondary);
+            color: var(--text-dim);
             font-size: 15px;
-            margin-bottom: 25px;
+            line-height: 1.7;
+            margin-bottom: 30px;
         }
 
         .btn {
             display: inline-block;
-            padding: 12px 25px;
-            background: var(--accent);
-            color: var(--bg);
+            padding: 14px 30px;
+            background: #fff;
+            color: #000;
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 50px;
             font-weight: 700;
-            text-transform: uppercase;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
-            transition: 0.3s;
-            letter-spacing: 1px;
+            transition: all 0.3s;
+            width: fit-content;
         }
 
         .btn:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(66, 133, 244, 0.2);
         }
 
         footer {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--secondary);
-            font-size: 12px;
-            letter-spacing: 2px;
-            border-top: 1px solid var(--border);
+            padding: 80px 20px;
+            color: var(--text-dim);
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
-        @media (max-width: 600px) {
-            header { height: 65vh; }
-            .container { margin-top: 0; }
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stagger effect for cards */
+        .project-grid .project-card:nth-child(1) { animation-delay: 0.5s; }
+        .project-grid .project-card:nth-child(2) { animation-delay: 0.6s; }
+        .project-grid .project-card:nth-child(3) { animation-delay: 0.7s; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .project-grid { grid-template-columns: 1fr; }
+            .card-large { grid-column: span 1; }
+            header h1 { font-size: 60px; }
         }
     </style>
 </head>
@@ -181,50 +220,50 @@
 
     <header>
         <h1>JRN STUDIO</h1>
-        <p>Creative Developer & Designer</p>
+        <p>Experimental Design & Code</p>
         
         <div class="socials">
-            <a href="https://www.facebook.com/jony.99.jrn" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="https://www.instagram.com/jony.99.jrn" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://github.com/jony99jrn" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
-            <a href="mailto:imjonyroy@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.facebook.com/jony.99.jrn" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/jony.99.jrn" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://github.com/jony99jrn" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="mailto:imjonyroy@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
     </header>
 
     <div class="container">
-        <h2 class="section-title">My Projects</h2>
+        <span class="section-title">Selected Works</span>
         <div class="project-grid">
-            <div class="project-card">
+            <div class="project-card card-large">
                 <div>
                     <i class="fas fa-terminal"></i>
                     <h3>Prompt Studio</h3>
-                    <p>একটি ডাইনামিক প্ল্যাটফর্ম যেখানে আমার তৈরি করা সব ইউনিক এআই ইমেজ এবং ক্রিয়েটিভ কন্টেন্ট শেয়ার করা হয়।</p>
+                    <p>একটি ডাইনামিক প্ল্যাটফর্ম যেখানে AI জেনারেশন এবং প্রম্পট ইঞ্জিনিয়ারিংয়ের এক্সপেরিমেন্টগুলো শেয়ার করা হয়। এটি সম্পূর্ণ অটোমেটেড এবং ক্লাউড ড্রাইভের সাথে যুক্ত।</p>
                 </div>
-                <a href="prompt-studio.html" class="btn">Launch Project</a>
+                <a href="prompt-studio.html" class="btn">Launch Lab</a>
             </div>
 
             <div class="project-card">
                 <div>
                     <i class="fas fa-paint-brush"></i>
-                    <h3>Web Design</h3>
-                    <p>আধুনিক ওয়েব ডিজাইন এবং ইউএক্স/ইউআই সমাধান যা ব্যবহারকারী অভিজ্ঞতা উন্নত করে।</p>
+                    <h3>Visual Design</h3>
+                    <p>মডার্ন ইউআই এবং মিনিমালিস্ট ডিজাইনের সমন্বয়ে তৈরি প্রজেক্টস।</p>
                 </div>
-                <a href="#" class="btn">Launch Project</a>
+                <a href="#" class="btn">Explore</a>
             </div>
 
             <div class="project-card">
                 <div>
                     <i class="fas fa-code"></i>
-                    <h3>Development</h3>
-                    <p>পূর্ণ-স্ট্যাক ওয়েব অ্যাপ্লিকেশন ডেভেলপমেন্ট এবং কাস্টম সফটওয়্যার সলিউশন।</p>
+                    <h3>Core Development</h3>
+                    <p>কাস্টম ওয়েব সলিউশন এবং ইন্টারেক্টিভ ইন্টারফেস ডিজাইন।</p>
                 </div>
-                <a href="#" class="btn">Launch Project</a>
+                <a href="#" class="btn">View Source</a>
             </div>
         </div>
     </div>
 
     <footer>
-        © 2026 JRN STUDIO. ALL RIGHTS RESERVED.
+        © 2026 JRN STUDIO. Built for the Future.
     </footer>
 
     <script src="chatbot.js"></script>
