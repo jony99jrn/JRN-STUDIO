@@ -84,7 +84,7 @@
     <div class="frame">
       <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
         <g id="group">
-          <path id="path" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"></path>
+          <path id="path" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" stroke-width="1.5"></path>
         </g>
       </svg>
     </div>
@@ -98,63 +98,72 @@
   <script>
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const config = {
-  name: "Lemniscate Bloom",
-  tag: "Bernoulli Lemniscate",
-  rotate: false,
-  particleCount: 70,
-  trailSpan: 0.4,
-  durationMs: 5600,
-  rotationDurationMs: 34000,
-  pulseDurationMs: 5000,
-  strokeWidth: 2.2,
-  lemniscateA: 20,
-  lemniscateBoost: 7,
-  formula(config) {
-      return [
-        `a = ${config.lemniscateA.toFixed(1)} + ${config.lemniscateBoost.toFixed(1)}s`,
-        "x(t) = 50 + a cos t / (1 + sin² t)",
-        "y(t) = 50 + a sin t cos t / (1 + sin² t)",
-      ].join("\n");
-    },
-  point(progress, detailScale, config) {
-      const t = progress * Math.PI * 2;
-      const scale = config.lemniscateA + detailScale * config.lemniscateBoost;
-      const denom = 1 + Math.sin(t) ** 2;
-      return {
-        x: 50 + (scale * Math.cos(t)) / denom,
-        y: 50 + (scale * Math.sin(t) * Math.cos(t)) / denom,
-      };
-    },
-};
+      name: "Lemniscate Bloom",
+      tag: "Bernoulli Lemniscate",
+      rotate: false,
+      particleCount: 70,
+      trailSpan: 0.4,
+      durationMs: 5600,
+      rotationDurationMs: 34000,
+      pulseDurationMs: 5000,
+      strokeWidth: 1.5,
+      lemniscateA: 20,
+      lemniscateBoost: 7,
+      formula(config) {
+        return [
+          `a = ${config.lemniscateA.toFixed(1)} + ${config.lemniscateBoost.toFixed(1)}s`,
+          "x(t) = 50 + a cos t / (1 + sin² t)",
+          "y(t) = 50 + a sin t cos t / (1 + sin² t)",
+        ].join("\n");
+      },
+      point(progress, detailScale, config) {
+        const t = progress * Math.PI * 2;
+        const scale = (config.lemniscateA + detailScale * config.lemniscateBoost) / 30;
+        const denom = 1 + Math.sin(t) ** 2;
+        const x = Math.cos(t) / denom;
+        const y = Math.sin(t) * Math.cos(t) / denom;
+        return {
+          x: 50 + x * scale * 15,
+          y: 50 + y * scale * 15,
+        };
+      },
+    };
+
     const group = document.querySelector('#group');
     const path = document.querySelector('#path');
     const formula = document.querySelector('#formula');
-    path.setAttribute('stroke-width', String(config.strokeWidth));
+    
     formula.textContent = typeof config.formula === 'function' ? config.formula(config) : config.formula;
+    
     const particles = Array.from({ length: config.particleCount }, () => {
       const circle = document.createElementNS(SVG_NS, 'circle');
       circle.setAttribute('fill', 'currentColor');
       group.appendChild(circle);
       return circle;
     });
+
     function normalizeProgress(progress) {
       return ((progress % 1) + 1) % 1;
     }
+
     function getDetailScale(time) {
       const pulseProgress = (time % config.pulseDurationMs) / config.pulseDurationMs;
       const pulseAngle = pulseProgress * Math.PI * 2;
       return 0.52 + ((Math.sin(pulseAngle + 0.55) + 1) / 2) * 0.48;
     }
+
     function getRotation(time) {
       if (!config.rotate) return 0;
       return -((time % config.rotationDurationMs) / config.rotationDurationMs) * 360;
     }
+
     function buildPath(detailScale, steps = 480) {
       return Array.from({ length: steps + 1 }, (_, index) => {
         const point = config.point(index / steps, detailScale, config);
         return `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
       }).join(' ');
     }
+
     function getParticle(index, progress, detailScale) {
       const tailOffset = index / (config.particleCount - 1);
       const point = config.point(normalizeProgress(progress - tailOffset * config.trailSpan), detailScale, config);
@@ -166,6 +175,7 @@
         opacity: 0.04 + fade * 0.96,
       };
     }
+
     const startedAt = performance.now();
     function render(now) {
       const time = now - startedAt;
